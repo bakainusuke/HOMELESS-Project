@@ -41,6 +41,8 @@ public class MoviesList implements Handler {
         // Next we will ask this *class* for the movies
         ArrayList<String> movies = jdbc.getMovies();
 
+       
+   
         // Add HTML for the movies list
         html = html + "<h1>Movies</h1>" + "<ul>";
 
@@ -48,10 +50,10 @@ public class MoviesList implements Handler {
         for (String movie : movies) {
             html = html + "<li>" + movie + "</li>";
         }
-
+        html = html + "<p>The total movies is";  html = html +  "</p>";
         // Finish the List HTML
         html = html + "</ul>";
-
+        
         // Add HTML for link back to the homepage
         html = html + "<p>Return to Homepage: ";
         html = html + "<a href='/'>Link to Homepage</a>";

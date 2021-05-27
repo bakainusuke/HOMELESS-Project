@@ -43,9 +43,11 @@ public class App {
         app.get(Index.URL, new Index());
         app.get(MoviesList.URL, new MoviesList());      
         app.get(MoviesType.URL, new MoviesType());
+        app.get(MoviesCount.URL, new MoviesCount());
 
         // POST pages can accept form data
         app.post(MoviesType.URL, new MoviesType());
+        app.post(MoviesCount.URL, new MoviesCount());
     }
 
 }

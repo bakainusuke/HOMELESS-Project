@@ -45,7 +45,7 @@ public class Index implements Handler {
         // Link for each page
         html = html + "<li> <a href='movies.html'>List all Movies</a> </li>";
         html = html + "<li> <a href='moviestype.html'>Get Movies by Type</a> </li>";
-
+        html = html + "<li> <a href='moviescount.html'>Total Movies</a> </li>";
         // Finish the List HTML
         html = html + "</ul>";
 

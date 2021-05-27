@@ -5,20 +5,8 @@ import java.util.ArrayList;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 
-/**
- * Example Index HTML class using Javalin
- * <p>
- * Generate a static HTML page using Javalin
- * by writing the raw HTML into a Java String object
- *
- * @author Timothy Wiley, 2021. email: timothy.wiley@rmit.edu.au
- * @author Santha Sumanasekara, 2021. email: santha.sumanasekara@rmit.edu.au
- */
-public class MoviesType implements Handler {
-
-    // URL of this page relative to http://localhost:7000/
-    public static final String URL = "/moviestype.html";
-
+public class MoviesCount  implements Handler  {
+    public static final String URL = "/moviescount.html";
     @Override
     public void handle(Context context) throws Exception {
         // Create a simple HTML webpage in a String
@@ -35,7 +23,7 @@ public class MoviesType implements Handler {
         html = html + "<body>";
 
         // Add HTML for the movies list
-        html = html + "<h1>Movies by Type</h1>";
+        html = html + "<h1>Movies by Directors</h1>";
 
         /* Add HTML for the web form
          * We are giving two ways here
@@ -46,18 +34,21 @@ public class MoviesType implements Handler {
          * 
          * IMPORTANT! the action speicifes the URL for POST!
          */
-        html = html + "<form action='/moviestype.html' method='post'>";
+        html = html + "<form action='/moviescount.html' method='post'>";
         html = html + "   <div class='form-group'>";
-        html = html + "      <label for='movietype_drop'>Select the type Movie Type (Dropdown):</label>";
+        html = html + "      <label for='movietype_drop'>Select the type Movie Directors (Dropdown):</label>";
         html = html + "      <select id='movietype_drop' name='movietype_drop'>";
-        html = html + "         <option>HORROR</option>";
-        html = html + "         <option>DRAMA</option>";
+        html = html + "         <option>Allen, Woody</option>";
+        html = html + "         <option>Hitchcock, Alfred</option>";
+        html = html + "         <option>De Mille, Cecil B</option>";
+        html = html + "         <option>Kramer, Stanley</option>";
+        html = html + "         <option>Kubrick, Stanley</option>";
+        html = html + "         <option>Preminger, Otto</option>";
+        html = html + "         <option>Ford, John</option>";
+        html = html + "         <option>Fellini, Federico</option>";
         html = html + "      </select>";
         html = html + "   </div>";
-        html = html + "   <div class='form-group'>";
-        html = html + "      <label for='movietype_textbox'>Select the type Movie Type (Textbox)</label>";
-        html = html + "      <input class='form-control' id='movietype_textbox' name='movietype_textbox'>";
-        html = html + "   </div>";
+       
         html = html + "   <button type='submit' class='btn btn-primary'>GO GO</button>";
         html = html + "</form>";
 
@@ -75,14 +66,7 @@ public class MoviesType implements Handler {
             html = html + outputMovies(movietype_drop);
         }
 
-        String movietype_textbox = context.formParam("movietype_textbox");
-        if (movietype_textbox == null || movietype_textbox == "") {
-            // If NULL, nothing to show, therefore we make some "no results" HTML
-            html = html + "<h2><i>No Results to show for textbox</i></h2>";
-        } else {
-            // If NOT NULL, then lookup the movie by type!
-            html = html + outputMovies(movietype_textbox);
-        }
+       
 
         // Add HTML for link back to the homepage
         html = html + "<p>Return to Homepage: ";
@@ -99,11 +83,11 @@ public class MoviesType implements Handler {
 
     public String outputMovies(String type) {
         String html = "";
-        html = html + "<h2>" + type + " Movies</h2>";
+        html = html + "<h2>" + type + "'s Movies</h2>";
 
         // Look up movies from JDBC
         JDBCConnection jdbc = new JDBCConnection();
-        ArrayList<String> movies = jdbc.getMoviesByType(type);
+        ArrayList<String> movies = jdbc.getMoviesByDirector(type);
         
         // Add HTML for the movies list
         html = html + "<ul>";
@@ -114,5 +98,4 @@ public class MoviesType implements Handler {
 
         return html;
     }
-
 }
