@@ -11,6 +11,9 @@ import java.sql.Statement;
 /**
  * Class for Managing the JDBC Connection to a SQLLite Database.
  * Allows SQL queries to be used with the SQLLite Databse in Java.
+ * 
+ * This is an example JDBC Connection that has a single query for the Movies Database
+ * This is similar to the project workshop JDBC examples.
  *
  * @author Santha Sumanasekara, 2021. email: santha.sumanasekara@rmit.edu.au
  * @author Timothy Wiley, 2021. email: timothy.wiley@rmit.edu.au
@@ -18,7 +21,7 @@ import java.sql.Statement;
 public class JDBCConnection {
 
     // Name of database file (contained in database folder)
-    private static final String DATABASE = "jdbc:sqlite:database/Movies.db";
+    private static final String DATABASE = "jdbc:sqlite:database/HomelessProject.db";
 
     public JDBCConnection() {
         System.out.println("Created JDBC Connection Object");
@@ -27,7 +30,7 @@ public class JDBCConnection {
     /**
      * Get all of the Movies in the database
      */
-    public ArrayList<String> getMovies() {
+    public ArrayList<String> getStatLGA(String year,String gender,String age1,String age2,String state,String sort) {
         ArrayList<String> movies = new ArrayList<String>();
 
         // Setup the variable for the JDBC connection
@@ -42,7 +45,7 @@ public class JDBCConnection {
             statement.setQueryTimeout(30);
 
             // The Query
-            String query = "SELECT * FROM movie";
+            String query = "Select lga_name, sum(population) as population from lga natural join groupstat where year Like '%"+ year +"' and state LIKE '%"+state+"%' and ( age >= '"+ age1 +"' and age <='"+ age2 +"')  and Gender like '%"+ gender +"%' and id like '%homeless%' Group by lga_name Order by population "+ sort +" limit 100";
             
             // Get Result
             ResultSet results = statement.executeQuery(query);
@@ -54,13 +57,14 @@ public class JDBCConnection {
                 // We can lookup a column of the a single record in the
                 // result using the column name
                 // BUT, we must be careful of the column type!
-                int id              = results.getInt("mvnumb");
-                String movieName     = results.getString("mvtitle");
-                int year            = results.getInt("yrmde");
-                String type         = results.getString("mvtype");
+                
+                
+                String lgaName        = results.getString("lga_name");
+                int sum             = results.getInt("population");
+                
 
                 // For now we will just store the movieName and ignore the id
-                movies.add(movieName);
+                movies.add(   lgaName + " has total " + sum );
             }
 
             // Close the statement because we are done with it
@@ -84,25 +88,15 @@ public class JDBCConnection {
         return movies;
     }
 
-        
-    /**
-     * Get all of the Movie Titles in the database
-     */
-    public ArrayList<String> getMovieTitles() {
-        ArrayList<String> titles = new ArrayList<String>();
 
-        // TODO: fill in yourself
 
-        return titles;
-    }
+    //
+    public ArrayList<String> getStatState(String year,String gender,String age1,String age2,String state,String sort) {
+        ArrayList<String> movies = new ArrayList<String>();
 
-    /**
-     * Count the number of movies in the database
-     */
-    public int countMovies() {
-        int count = 0;
+        // Setup the variable for the JDBC connection
+        Connection connection = null;
 
-        // TODO: fill in yourself
         try {
             // Connect to JDBC data base
             connection = DriverManager.getConnection(DATABASE);
@@ -112,7 +106,7 @@ public class JDBCConnection {
             statement.setQueryTimeout(30);
 
             // The Query
-            String query = "SELECT * FROM movie";
+            String query = "Select state, sum(population) as population from lga natural join groupstat where year Like '%"+ year +"' and state LIKE '%%' and ( age >= '"+ age1 +"' and age <='"+ age2 +"')  and Gender like '%"+ gender +"%' and id like '%homeless%' Group by state Order by population "+ sort +" ";
             
             // Get Result
             ResultSet results = statement.executeQuery(query);
@@ -120,120 +114,18 @@ public class JDBCConnection {
             // Process all of the results
             // The "results" variable is similar to an array
             // We can iterate through all of the database query results
-            int counter=0;
             while (results.next()) {
                 // We can lookup a column of the a single record in the
                 // result using the column name
                 // BUT, we must be careful of the column type!
-                int id              = results.getInt("mvnumb");
                 
                 
+                String stateName        = results.getString("state");
+                int sum                 = results.getInt("population");
+                
+
                 // For now we will just store the movieName and ignore the id
-                counter++;
-            }
-            count = counter;
-            
-        } catch (SQLException e) {
-            // If there is an error, lets just pring the error
-            System.err.println(e.getMessage());
-        } finally {
-            // Safety code to cleanup
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                // connection close failed.
-                System.err.println(e.getMessage());
-            }
-        }
-        return count;
-    }
-    public void prin() {
-        System.out.println(countMovies());
-    }
-    /**
-     * Get all the movies in the database by a given type.
-     * Note this takes a string of the type as an argument!
-     * This has been implemented for you as an example.
-     * HINT: you can use this to find all of the horror movies!
-     */
-    public ArrayList<String> getMoviesByType(String movieType) {
-        ArrayList<String> movies = new ArrayList<String>();
-
-        // Setup the variable for the JDBC connection
-        Connection connection = null;
-
-        try {
-            // Connect to JDBC data base
-            connection = DriverManager.getConnection(DATABASE);
-
-            // Prepare a new SQL Query & Set a timeout
-            Statement statement = connection.createStatement();
-            statement.setQueryTimeout(30);
-
-            // The Query
-            String query = "SELECT * FROM movie WHERE mvtype = '" + movieType + "'";
-            System.out.println(query);
-            
-            // Get Result
-            ResultSet results = statement.executeQuery(query);
-
-            // Process all of the results
-            while (results.next()) {
-                String movieName     = results.getString("mvtitle");
-                movies.add(movieName);
-            }
-
-            // Close the statement because we are done with it
-            statement.close();
-        } catch (SQLException e) {
-            // If there is an error, lets just pring the error
-            System.err.println(e.getMessage());
-        } finally {
-            // Safety code to cleanup
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                // connection close failed.
-                System.err.println(e.getMessage());
-            }
-        }
-
-        // Finally we return all of the movies
-        return movies;
-    }
-
-    // TODO: Keep adding more methods here to answer all of the questions from the Studio Class activities
-
-    public ArrayList<String> getMoviesByDirector(String movieDirector) {
-        ArrayList<String> movies = new ArrayList<String>();
-
-        // Setup the variable for the JDBC connection
-        Connection connection = null;
-
-        try {
-            // Connect to JDBC data base
-            connection = DriverManager.getConnection(DATABASE);
-
-            // Prepare a new SQL Query & Set a timeout
-            Statement statement = connection.createStatement();
-            statement.setQueryTimeout(30);
-
-            // The Query
-            String query = "select mvtitle, starname from (director natural join movie) natural join ( star natural join movstar) where dirname = '" + movieDirector + "'";
-            System.out.println(query);
-            
-            // Get Result
-            ResultSet results = statement.executeQuery(query);
-
-            // Process all of the results
-            while (results.next()) {
-                String movieName     = results.getString("mvtitle");
-                String movieStar     = results.getString("starname");
-                movies.add(movieName+ " starring:  " + movieStar);
+                movies.add(   stateName + " has total " + sum );
             }
 
             // Close the statement because we are done with it
